@@ -681,8 +681,12 @@ class TransformerManager:
             with warnings.catch_warnings():
                 warnings.simplefilter('error', SyntaxWarning)
                 res = compile_command(''.join(lines), symbol='exec')
-        except (SyntaxError, OverflowError, ValueError, TypeError,
-                MemoryError, SyntaxWarning):
+        except SyntaxError as e:
+            if "'async with' outside async function" in str(e):
+                pass
+            else:
+                return 'invalid', None
+        except (OverflowError, ValueError, TypeError, MemoryError, SyntaxWarning):
             return 'invalid', None
         else:
             if res is None:
